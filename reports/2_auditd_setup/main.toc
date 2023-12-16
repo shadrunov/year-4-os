@@ -1,0 +1,11 @@
+
+\selectlanguage *[spelling=modern]{russian}
+\contentsline {section}{\numberline {1}Цель работы}{3}{section.1}%
+\contentsline {section}{\numberline {2}Ход работы}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Рекомендуемые правила}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}События входа и выхода}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Управление учётными записями}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Аудит изменения политики}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Аудит использования привилегий}{8}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Аудит доступа пользователя к объектам}{8}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Выводы о проделанной работе}{9}{section.3}%

@@ -1,0 +1,194 @@
+\section{Цель работы}
+Целью работы является изучение основных политик, их подкатегорий и процесса настройки
+расширенной политики аудита.
+
+\section{Ход работы}
+\subsection{Рекомендуемые правила}
+
+Для системы auditd существуют рекомендуемые правила (\url{https://github.com/Neo23x0/auditd/blob/master/audit.rules}). Эти правила содержат настройки для аудита следующих действий:
+\begin{itemize}
+    \item Доступ к логам auditd (успех и неуспех)
+    \item Доступ к правилам auditd (файлы конфигурации и утилиты)
+    \item Доступ к параметрам ядра sysctl
+    \item Доступ к модулям ядра: insmod, modprobe, rmmod, файлы конфигурации
+    \item Монтирование mount
+    \item Файл подкачки: swapon, swapoff
+    \item Служба времени: adjtimex, settimeofday, clock\_settime, /etc/localtime
+    \item Stunnel
+    \item Cron: /etc/crontab
+    \item Пользователи, группы, пароли: /etc/group, /etc/passwd, /etc/shadow
+    \item Sudo: /etc/sudoers
+    \item Passwd: /usr/bin/passwd
+    \item Изменение групп: groupadd, groupmod, addgroup, useradd, userdel, usermod, adduser
+    \item Сеть: sethostname, setdomainname
+    \item Удалённая консоль: /bin/bash connect
+    \item Успешные ipv4 и ipv6 подключения
+    \item Файлы: /etc/hosts, /etc/sysconfig/network, /etc/network
+    \item Init
+    \item Пути к подключаемым библиотекам: /etc/ld.so.conf, /etc/ld.so.preload
+    \item Настройки Pam, Mail
+    \item SSH: /etc/ssh/sshd\_config, /root/.ssh
+    \item Systemd: /bin/systemctl, /etc/systemd/
+    \item SELinux
+    \item Ошибки доступа к каталогам в корне файловой системы
+    \item Повышение привилегий: su, sudo
+    \item Питание: shutdown, poweroff, reboot, halt
+    \item Сессии: utmp, btmp, wtmp
+    \item Дискреционный доступ: chmod, chown etc.
+    \item Правила на разведку, на подозрительную активность, работу с архивами
+    \item Нестандартные командные оболочки, профили оболочен 
+    \item Инъекция кода с ptrace
+    \item Анонимное создание файлов
+    \item Доступ администраторов в чужие рабочие директории 
+    \item Создание сокетов
+    \item Использование пакетных менеджеров
+    \item Grep
+    \item Docker и виртуализация (qemu, virtual box)
+    \item kubelet
+    \item Запуск команд под рутом
+    \item Неуспех доступа к файлам
+\end{itemize}
+
+Установим правила (рисунки 1-3):
+\image{11.png}{Сохранение правил в файл}{1}
+\FloatBarrier
+
+\image{12.png}{Применение правил}{1}
+\FloatBarrier
+
+\image{13.png}{Количество активных правил}{1}
+\FloatBarrier
+
+Рассмотрим основные действия, которые можно логировать, и изучим, как рекомендуемые правила справляются в рассматриваемых случаях.
+
+\subsection{События входа и выхода}
+Для логирования событий входа и выхода подойдёт следующий участок правил:
+
+\begin{lstlisting}[language=bash, numbers=none, caption={События входа и выхода}]
+## Session initiation information
+-w /var/run/utmp -p wa -k session
+-w /var/log/btmp -p wa -k session
+-w /var/log/wtmp -p wa -k session
+\end{lstlisting}
+
+Файл utmp содержит данные о текущей сессии, btmp — об ошибках, wtmp — история сессий. Сделаем поиск событий по ключу session. Видно, что последний вход под пользователем test осуществлялся в 22:20 (рисунок 4). В это время есть логи аудита (рисунок 5):
+
+\image{21.png}{Последний вход}{0.7}
+\FloatBarrier
+
+\image{22.png}{Логи аудита}{1}
+\FloatBarrier
+
+
+\subsection{Управление учётными записями}
+Для логирования административных действий подходит следующий раздел:
+
+\begin{lstlisting}[language=bash, numbers=none, caption={Управление учётными записями}]
+## User, group, password databases
+-w /etc/group -p wa -k etcgroup
+-w /etc/passwd -p wa -k etcpasswd
+-w /etc/gshadow -k etcgroup
+-w /etc/shadow -k etcpasswd
+-w /etc/security/opasswd -k opasswd
+
+## Tools to change group identifiers
+-w /usr/sbin/groupadd -p x -k group_modification
+-w /usr/sbin/groupmod -p x -k group_modification
+-w /usr/sbin/addgroup -p x -k group_modification
+-w /usr/sbin/useradd -p x -k user_modification
+-w /usr/sbin/userdel -p x -k user_modification
+-w /usr/sbin/usermod -p x -k user_modification
+-w /usr/sbin/adduser -p x -k user_modification
+\end{lstlisting}
+
+Проверим создание и удаление пользователя по ключу user\_modification. Создадим и удалим пользователя (рисунок 6). Соответствующие записи появились в логах аудита (рисунок 7).
+
+\image{31.png}{Создание и удаление пользователя}{1}
+\FloatBarrier
+
+\image{32.png}{Логи аудита}{1}
+\FloatBarrier
+
+
+\subsection{Аудит изменения политики}
+Для логирования изменений в политику auditd подходит следующий раздел:
+
+\begin{lstlisting}[language=bash, numbers=none, caption={Аудит изменения политики}]
+# Audit the audit logs
+### Successful and unsuccessful attempts to read information from the audit records
+-w /var/log/audit/ -p wra -k auditlog
+-w /var/audit/ -p wra -k auditlog
+
+## Auditd configuration
+### Modifications to audit configuration that occur while the audit collection functions are operating
+-w /etc/audit/ -p wa -k auditconfig
+-w /etc/libaudit.conf -p wa -k auditconfig
+-w /etc/audisp/ -p wa -k audispconfig
+
+## Monitor for use of audit management tools
+-w /sbin/auditctl -p x -k audittools
+-w /sbin/auditd -p x -k audittools
+-w /usr/sbin/auditd -p x -k audittools
+-w /usr/sbin/augenrules -p x -k audittools
+
+\end{lstlisting}
+
+Выполним команду auditctl и проверим, появились ли логи (рисунки 8, 9). 
+
+\image{41.png}{auditctl}{1}
+\FloatBarrier
+
+\image{42.png}{Логи аудита}{1}
+\FloatBarrier
+
+
+
+\subsection{Аудит использования привилегий}
+Для логирования использования привилегий подходит следующий раздел:
+
+\begin{lstlisting}[language=bash, numbers=none, caption={Аудит использования привилегий}]
+## Process ID change (switching accounts) applications
+-w /bin/su -p x -k priv_esc
+-w /usr/bin/sudo -p x -k priv_esc
+\end{lstlisting}
+
+Выполним команду sudo -i и проверим, появились ли логи (рисунки 10, 11). 
+
+\image{51.png}{sudo -i}{1}
+\FloatBarrier
+
+\image{52.png}{Логи аудита}{1}
+\FloatBarrier
+
+
+\subsection{Аудит доступа пользователя к объектам}
+Для логирования неудачных попыток пользователей получить доступ к разделам файловой системы подходит следующий фрагмент правил:
+
+\begin{lstlisting}[language=bash, numbers=none, caption={Аудит доступа пользователя к объектам}]
+
+## File Access
+### Unauthorized Access (unsuccessful)
+-a always,exit -F arch=b64 -S creat -S open -S openat -S open_by_handle_at -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=-1 -k file_access
+-a always,exit -F arch=b64 -S creat -S open -S openat -S open_by_handle_at -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=-1 -k file_access
+
+### Unsuccessful Creation
+-a always,exit -F arch=b64 -S mkdir,creat,link,symlink,mknod,mknodat,linkat,symlinkat -F exit=-EACCES -k file_creation
+-a always,exit -F arch=b64 -S mkdir,link,symlink,mkdirat -F exit=-EPERM -k file_creation
+
+### Unsuccessful Modification
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EACCES -k file_modification
+-a always,exit -F arch=b64 -S rename -S renameat -S truncate -S chmod -S setxattr -S lsetxattr -S removexattr -S lremovexattr -F exit=-EPERM -k file_modification
+\end{lstlisting}
+
+Попробуем изменить файл /etc/shadow и проверим, появились ли логи об отказе в доступе (рисунки 10, 11). 
+
+\image{61.png}{truncate}{1}
+\FloatBarrier
+
+\image{62.png}{Логи аудита}{1}
+\FloatBarrier
+
+
+
+\section{Выводы о проделанной работе}
+В ходе работы рассмотрены возможности, варианты применения и настройки системы audit, а также ее изначальные параметры. Получены знания о механизмах обеспечения безопасности ОС Linux, навыки настроек правил auditd, протоколирование важной с точки зрения безопасности информации.
