@@ -1,0 +1,40 @@
+\usepackage{listings} % библиотека листингов
+\usepackage{color} % подсветка листинга
+
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+
+\lstset{ % Подробнее про настройку листингов https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+  backgroundcolor=\color{white},   % цвет фона
+  basicstyle=\ttfamily\footnotesize,    % семейсто, размер шрифта
+  breakatwhitespace=true,               % разрыв строк только при пробеле
+  breaklines=true,                      % перенос строк
+  captionpos=b,                         % месторасположение подписи bottom
+  commentstyle=\color{mygreen},         % цвет комментария (не распростроняется на кириллицу)
+  keepspaces=true,                      %
+  keywordstyle=\color{blue},            %
+  showspaces=false,                     % отключена замена пробелов на нижние подчеркивания
+  showstringspaces=false,               % отключена замена пробелов на нижние подчеркивания
+  showtabs=false,                       % отключена замена табуляций на нижние подчеркивания
+  stepnumber=1,                         %
+  stringstyle=\color{mymauve},          % цвет литералов
+  tabsize=4,
+  % numberstyle=\tiny\color{codegray}
+  numberstyle=\small\color{codegray},
+  numbers=left,
+  numbersep=5pt,
+  lineskip={-5pt},
+  xleftmargin=18pt,
+  aboveskip=10pt,
+  abovecaptionskip=1.5em
+  }
+
+% Подписи к листингам на русском языке.
+\renewcommand\lstlistingname{Листинг}
+\renewcommand\lstlistlistingname{Листинги}
+
+
+

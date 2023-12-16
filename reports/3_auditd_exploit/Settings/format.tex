@@ -1,0 +1,64 @@
+\setdefaultlanguage[spelling=modern]{russian}
+\setotherlanguage{english}
+
+\usepackage{fontspec}
+
+\newfontfamily{\timesfont}{Times New Roman}[Script=Cyrillic]
+
+\newfontfamily{\cyrillicfont}{CMU Serif}[Script=Cyrillic]
+\newfontfamily{\cyrillicfontrm}{CMU Serif}[Script=Cyrillic]
+\newfontfamily{\cyrillicfontsf}{CMU Serif}[Script=Cyrillic]
+\newfontfamily{\cyrillicfonttt}{Courier New}
+
+\defaultfontfeatures{Ligatures=TeX}
+
+\urlstyle{same} % шрифт для URL-ссылок
+
+\linespread{1.5} % междустрочный интервал
+
+\setlength{\parindent}{1.25cm} % отступ для абзаца
+
+\graphicspath{ {Images} } % Путь до папки с изображениями
+
+% Внесение titlepage в учёт счётчика страниц
+\makeatletter
+\renewenvironment{titlepage}{\thispagestyle{empty}}
+
+% Цвет гиперссылок и цитирования
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, filecolor=blue, citecolor=black, urlcolor=blue}
+
+\usepackage[section]{placeins}
+\captionsetup[figure]{labelformat=simple, labelsep=endash, justification=centering, belowskip=-1.4em}
+\captionsetup[table]{labelsep=endash, justification=raggedright, singlelinecheck=off}
+\captionsetup[lstlisting]{labelformat=simple, labelsep=endash, font=sf}
+
+% \setlength{\intextsep}{12pt plus 0pt minus 0pt}
+
+
+% basic font size for headings 
+\usepackage{titlesec}
+\titleformat{\section}{\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\bfseries}{\thesubsubsection}{1em}{}
+
+% spacing before and after paragraphs 
+\titlespacing\section{0pt}{0pt plus 0pt minus 0pt}{0pt plus 0pt minus 0pt}
+\titlespacing\subsection{0pt}{0pt plus 0pt minus 0pt}{0pt plus 0pt minus 0pt}
+\titlespacing\subsubsection{0pt}{0pt plus 0pt minus 0pt}{0pt plus 0pt minus 0pt}
+
+% \setlength{\textfloatsep}{12pt plus 0pt minus 0pt}
+% \setlength{\floatsep}{12pt plus 0pt minus 0pt}
+% \setlength{\intextsep}{12pt plus 0pt minus 0pt}
+
+
+% page number font sans serif
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\ps@plain}{\thepage}{\sffamily\thepage}{}{}
+\makeatother
+\pagestyle{plain}
+% indentation for items
+\usepackage{enumitem}
+\setlist{align=right,itemindent=1.25cm,leftmargin=0pt,nolistsep}
+\renewcommand{\labelitemi}{-}
