@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{gcpd}
+Microsoft.
+\newblock Getprocessid function (processthreadsapi.h).
+\newblock \url{https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocessid}.
+
+\bibitem{cts}
+Microsoft.
+\newblock Createtoolhelp32snapshot function (tlhelp32.h).
+\newblock \url{https://learn.microsoft.com/en-gb/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot}.
+
+\bibitem{pn}
+Microsoft.
+\newblock Process32next function (tlhelp32.h).
+\newblock \url{https://learn.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-process32next}.
+
+\end{thebibliography}
